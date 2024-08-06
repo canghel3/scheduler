@@ -1,33 +1,85 @@
 package job
 
-import "context"
+import (
+	"context"
+	"github.com/google/uuid"
+)
 
 type Task func(ctx context.Context) error
 
+// TODO: add retrial count
+// add ability to start after some given time
 type Job struct {
-	ID       string
-	Task     Task
-	Response chan error
-	Context  context.Context
+	id            string
+	task          Task
+	respond       bool
+	response      chan Response
+	setOwnChannel bool
+	ctx           context.Context
 }
 
-type JobResponse struct {
-	ID  string
-	Err error
-}
-
-func NewJob(task Task) Job {
-	return Job{
-		ID:       "some ID",
-		Task:     task,
-		Response: make(chan error),
+func NewJob(task Task, options ...Option) Job {
+	job := Job{
+		id:            uuid.New().String(),
+		task:          task,
+		respond:       false,
+		response:      make(chan Response),
+		setOwnChannel: false,
+		ctx:           context.Background(),
 	}
+
+	for _, option := range options {
+		option(&job)
+	}
+
+	return job
+}
+
+func (j Job) AwaitResponse() Response {
+	return <-j.response
+}
+
+func (j Job) ID() string {
+	return j.id
+}
+
+func (j Job) Task() Task {
+	return j.task
+}
+
+func (j Job) Context() context.Context {
+	return j.ctx
+}
+
+func (j Job) Respond() bool {
+	return j.respond
+}
+
+func (j Job) ResponseChannel() chan Response {
+	return j.response
+}
+
+func (j Job) SetOwnChannel() bool {
+	return j.setOwnChannel
 }
 
 type Option func(j *Job)
 
-func JobID(id string) Option {
+func IDOption(id string) Option {
 	return func(j *Job) {
-		j.ID = id
+		j.id = id
+	}
+}
+
+func ResponseChannelOption(response chan Response) Option {
+	return func(j *Job) {
+		j.response = response
+		j.setOwnChannel = true
+	}
+}
+
+func RespondOption(respond bool) Option {
+	return func(j *Job) {
+		j.respond = respond
 	}
 }

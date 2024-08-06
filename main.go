@@ -15,9 +15,8 @@ func main() {
 	j1 := job.NewJob(task1)
 	j2 := job.NewJob(task2)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	j1.Context = ctx
-	cancel()
+	//ctx, cancel := context.WithCancel(context.Background())
+	//cancel()
 	//defer cancel()
 
 	q.Add(j1)
@@ -25,7 +24,7 @@ func main() {
 
 	//TODO: if any response is sent on the response channel, but is not read, the routine is blocked.
 	// this can cause high resource utilisation if many are left unread.
-	//j1err := <-j1.Response
+	//j1err := <-j1.response
 	//fmt.Println(j1err.Error())
 
 	time.Sleep(time.Second * 1)
