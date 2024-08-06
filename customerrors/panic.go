@@ -2,30 +2,30 @@ package customerrors
 
 import "errors"
 
-type Panic struct {
-	Message string
-	Err     error
-	R       any
+type PanicError struct {
+	Message   string
+	Err       error
+	Recovered any
 }
 
-func (e *Panic) Error() string {
+func (e *PanicError) Error() string {
 	return e.Message
 }
 
-func (e *Panic) Unwrap() error {
+func (e *PanicError) Unwrap() error {
 	return e.Err
 }
 
-func NewRecoveredPanic(r any) *Panic {
-	return &Panic{
-		Message: "recovered panic",
-		Err:     errors.New("panic"),
-		R:       r,
+func NewRecoveredPanicError(r any) *PanicError {
+	return &PanicError{
+		Message:   "recovered panic",
+		Err:       errors.New("panic"),
+		Recovered: r,
 	}
 }
 
-func NewPanic(message string) *Panic {
-	return &Panic{
+func NewPanicError(message string) *PanicError {
+	return &PanicError{
 		Message: message,
 		Err:     errors.New("panic"),
 	}

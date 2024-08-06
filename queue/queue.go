@@ -6,24 +6,25 @@ import (
 )
 
 type Queue struct {
-	jobs chan job.Job
-	size int
+	jobs    chan job.Job
+	workers int
 }
 
 func NewQueue(size int) *Queue {
 	return &Queue{
-		jobs: make(chan job.Job, size),
-		size: size,
+		jobs:    make(chan job.Job, size),
+		workers: size,
 	}
 }
 
 func (q *Queue) Start() {
-	for i := 0; i < q.size; i++ {
+	for i := 0; i < q.workers; i++ {
 		go q.processor()
 	}
 }
 
 func (q *Queue) Add(job job.Job) {
+	//TODO: if queue is full, this operation is blocking (run as routine?)
 	q.jobs <- job
 }
 
@@ -40,7 +41,7 @@ func (q *Queue) processor() {
 
 func recovery(job job.Job) {
 	if r := recover(); r != nil {
-		job.Response <- customerrors.NewRecoveredPanic(r)
+		job.Response <- customerrors.NewRecoveredPanicError(r)
 	}
 }
 
