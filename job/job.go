@@ -9,6 +9,7 @@ type Task func(ctx context.Context) error
 
 // TODO: add retrial count
 // add ability to start after some given time
+// add ability to start only after a given job finished
 type Job struct {
 	id            string
 	task          Task
@@ -65,21 +66,27 @@ func (j Job) SetOwnChannel() bool {
 
 type Option func(j *Job)
 
-func IDOption(id string) Option {
+func WithID(id string) Option {
 	return func(j *Job) {
 		j.id = id
 	}
 }
 
-func ResponseChannelOption(response chan Response) Option {
+func WithResponseChannel(response chan Response) Option {
 	return func(j *Job) {
 		j.response = response
 		j.setOwnChannel = true
 	}
 }
 
-func RespondOption(respond bool) Option {
+func DoRespond() Option {
 	return func(j *Job) {
-		j.respond = respond
+		j.respond = true
+	}
+}
+
+func WithContext(ctx context.Context) Option {
+	return func(j *Job) {
+		j.ctx = ctx
 	}
 }

@@ -69,6 +69,11 @@ func respond(j job.Job, err error) {
 		j.ResponseChannel() <- job.NewResponse(j.ID(), err)
 
 		if !j.SetOwnChannel() {
+			//job initiator is expecting a response, but has not set its own channel,
+			//so it is safe to close the channel after sending the response.
+			//the channel will be closed after the response is read.
+			//in case the job initiator set its own response channel, the channel is not closed
+			//since it may be used for reading other responses.
 			close(j.ResponseChannel())
 		}
 	} else {
