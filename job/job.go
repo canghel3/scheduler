@@ -9,24 +9,19 @@ type Task func(ctx context.Context) error
 
 // TODO: add retrial count
 // add ability to start after some given time
-// add ability to start only after a given job finished
 type Job struct {
-	id            string
-	task          Task
-	respond       bool
-	response      chan Response
-	setOwnChannel bool
-	ctx           context.Context
+	id       string
+	task     Task
+	response chan Response
+	ctx      context.Context
 }
 
 func NewJob(task Task, options ...Option) Job {
 	job := Job{
-		id:            uuid.New().String(),
-		task:          task,
-		respond:       false,
-		response:      make(chan Response),
-		setOwnChannel: false,
-		ctx:           context.Background(),
+		id:       uuid.New().String(),
+		task:     task,
+		response: make(chan Response),
+		ctx:      context.Background(),
 	}
 
 	for _, option := range options {
@@ -37,7 +32,9 @@ func NewJob(task Task, options ...Option) Job {
 }
 
 func (j Job) AwaitResponse() Response {
-	return <-j.response
+	s := <-j.response
+	close(j.response)
+	return s
 }
 
 func (j Job) ID() string {
@@ -52,16 +49,8 @@ func (j Job) Context() context.Context {
 	return j.ctx
 }
 
-func (j Job) Respond() bool {
-	return j.respond
-}
-
 func (j Job) ResponseChannel() chan Response {
 	return j.response
-}
-
-func (j Job) SetOwnChannel() bool {
-	return j.setOwnChannel
 }
 
 type Option func(j *Job)
@@ -69,19 +58,6 @@ type Option func(j *Job)
 func WithID(id string) Option {
 	return func(j *Job) {
 		j.id = id
-	}
-}
-
-func WithResponseChannel(response chan Response) Option {
-	return func(j *Job) {
-		j.response = response
-		j.setOwnChannel = true
-	}
-}
-
-func DoRespond() Option {
-	return func(j *Job) {
-		j.respond = true
 	}
 }
 
