@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"github.com/Ginger955/scheduler/customerrors"
 	"github.com/Ginger955/scheduler/job"
 	"github.com/Ginger955/scheduler/queue"
 	"time"
@@ -22,10 +24,20 @@ func main() {
 	q.Add(j1)
 	q.Add(j2)
 
+	r := j1.AwaitResponse()
+	fmt.Println(r.ID())
+
+	err := r.Err()
+	if err != nil {
+		var panicErr *customerrors.PanicError
+		if errors.As(err, &panicErr) {
+			recoveredValue := panicErr.Recovered
+			fmt.Println(err, recoveredValue)
+			// Use recoveredValue as needed
+		}
+	}
 	//TODO: if any response is sent on the response channel, but is not read, the routine is blocked.
 	// this can cause high resource utilisation if many are left unread.
-	//j1err := <-j1.response
-	//fmt.Println(j1err.Error())
 
 	time.Sleep(time.Second * 1)
 }
