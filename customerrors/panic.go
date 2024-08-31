@@ -1,6 +1,9 @@
 package customerrors
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 type PanicError struct {
 	Message   string
@@ -17,9 +20,10 @@ func (e *PanicError) Unwrap() error {
 }
 
 func NewRecoveredPanicError(r any) *PanicError {
+	msg := fmt.Sprintf("panic: %v", r)
 	return &PanicError{
-		Message:   "recovered panic",
-		Err:       errors.New("panic"),
+		Message:   msg,
+		Err:       errors.New(msg),
 		Recovered: r,
 	}
 }

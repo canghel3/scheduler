@@ -34,12 +34,12 @@ func (q *Queue) add(job job.Job) {
 }
 
 func (q *Queue) processor() {
-	for job := range q.jobs {
+	for j := range q.jobs {
 		func() {
-			defer recovery(job)
+			defer recovery(j)
 
-			err := job.Task()(job.Context())
-			go respond(job, err)
+			err := j.Task()(j.Context())
+			go respond(j, err)
 		}()
 	}
 }
