@@ -3,6 +3,7 @@ package queue
 import (
 	"github.com/Ginger955/scheduler/customerrors"
 	"github.com/Ginger955/scheduler/job"
+	"time"
 )
 
 type Queue struct {
@@ -24,12 +25,15 @@ func (q *Queue) Start() {
 }
 
 // Add adds a job to the queue.
-func (q *Queue) Add(job job.Job) {
+func (q *Queue) Add(job job.Job, delay ...time.Duration) {
 	//run add as routine because if the job channel is full, sending on it is blocked until it is read from, and we do not want to block the user
-	go q.add(job)
+	go q.add(job, delay...)
 }
 
-func (q *Queue) add(job job.Job) {
+func (q *Queue) add(job job.Job, delay ...time.Duration) {
+	if len(delay) > 0 {
+		time.Sleep(delay[0])
+	}
 	q.jobs <- job
 }
 

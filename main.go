@@ -29,13 +29,6 @@ func main() {
 
 	err := r.Err()
 	if err != nil {
-		//var panicErr *customerrors.PanicError
-		//if errors.As(err, &panicErr) {
-		//	recoveredValue := panicErr.Recovered
-		//	fmt.Println("1", err, recoveredValue)
-		//} else {
-		//	fmt.Println("2", err)
-		//}
 		fmt.Println(err.Error())
 	}
 

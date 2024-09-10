@@ -7,8 +7,6 @@ import (
 
 type Task func(ctx context.Context) error
 
-// TODO: add retrial count
-// add ability to start after some given time
 type Job struct {
 	id       string
 	task     Task
