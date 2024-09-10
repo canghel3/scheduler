@@ -11,17 +11,24 @@ type Queue struct {
 	workers int
 }
 
-func NewQueue(size int) *Queue {
-	return &Queue{
-		jobs:    make(chan job.Job, size),
-		workers: size,
+func NewQueue(size int, workers ...int) *Queue {
+	var w int
+	if len(workers) > 0 {
+		w = workers[0]
+	} else {
+		w = size
 	}
-}
 
-func (q *Queue) Start() {
+	q := &Queue{
+		jobs:    make(chan job.Job, size),
+		workers: w,
+	}
+
 	for i := 0; i < q.workers; i++ {
 		go q.processor()
 	}
+
+	return q
 }
 
 // Add adds a job to the queue.
@@ -34,6 +41,7 @@ func (q *Queue) add(job job.Job, delay ...time.Duration) {
 	if len(delay) > 0 {
 		time.Sleep(delay[0])
 	}
+
 	q.jobs <- job
 }
 

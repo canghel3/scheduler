@@ -9,8 +9,7 @@ import (
 )
 
 func main() {
-	q := queue.NewQueue(5)
-	q.Start()
+	q := queue.NewQueue(5, 1)
 
 	ctx, cancel := context.WithCancel(context.WithValue(context.Background(), "number", "this is not a number"))
 	//cancel()
@@ -32,7 +31,7 @@ func main() {
 		fmt.Println(err.Error())
 	}
 
-	time.Sleep(time.Second * 1)
+	time.Sleep(time.Second * 10)
 }
 
 func task1(ctx context.Context) error {
@@ -48,11 +47,13 @@ func task1(ctx context.Context) error {
 }
 
 func task2(context.Context) error {
+	time.Sleep(1 * time.Second)
 	fmt.Println("task 2")
 	return nil
 }
 
 func samplePassValue(ctx context.Context) error {
+	time.Sleep(2 * time.Second)
 	fmt.Println(ctx.Value("number"))
 	return nil
 }
