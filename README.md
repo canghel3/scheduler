@@ -1,4 +1,4 @@
-## A simple job scheduler for running async tasks/functions.
+## A simple Go job scheduler for running async tasks/functions.
 
 ### How to use:
 
