@@ -31,6 +31,7 @@ func NewJob(task Task, options ...Option) Job {
 
 func (j Job) AwaitResponse() Response {
 	s := <-j.response
+	//the receiver should never close the channel, but in this case the channel is single use only, and it will never be used again for sending
 	close(j.response)
 	return s
 }
