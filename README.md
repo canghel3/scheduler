@@ -1,5 +1,11 @@
 ## A simple Go job scheduler for running async tasks/functions.
 
+### Install with
+
+```bash
+go get github.com/Ginger955/scheduler
+```
+
 ### How to use:
 
 1. define the task that you want to execute in the form of a function.
