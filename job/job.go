@@ -29,10 +29,10 @@ func NewJob(task Task, options ...Option) Job {
 	return job
 }
 
+// AwaitResponse blocks until a response is received from the job execution.
+// It is guaranteed to receive a response, even if the executing job panics.
 func (j Job) AwaitResponse() Response {
 	s := <-j.response
-	//the receiver should never close the channel, but in this case the channel is single use only, and it will never be used again for sending
-	close(j.response)
 	return s
 }
 
