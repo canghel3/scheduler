@@ -3,25 +3,20 @@ package queue
 import (
 	"github.com/Ginger955/scheduler/customerrors"
 	"github.com/Ginger955/scheduler/job"
+	"sync/atomic"
 	"time"
 )
 
 type Queue struct {
-	jobs    chan job.Job
-	workers int
+	jobs         chan job.Job
+	runningTasks atomic.Int32
+	workers      int
 }
 
-func NewQueue(size int, workers ...int) *Queue {
-	var w int
-	if len(workers) > 0 {
-		w = workers[0]
-	} else {
-		w = size
-	}
-
+func NewQueue(size int, workers int) *Queue {
 	q := &Queue{
 		jobs:    make(chan job.Job, size),
-		workers: w,
+		workers: workers,
 	}
 
 	for i := 0; i < q.workers; i++ {
@@ -37,27 +32,34 @@ func (q *Queue) Add(job job.Job, delay ...time.Duration) {
 	go q.add(job, delay...)
 }
 
+func (q *Queue) Running() int {
+	return int(q.runningTasks.Load())
+}
+
 func (q *Queue) add(job job.Job, delay ...time.Duration) {
 	if len(delay) > 0 {
 		time.Sleep(delay[0])
 	}
 
 	q.jobs <- job
+	q.runningTasks.Add(1)
 }
 
 func (q *Queue) processor() {
 	for j := range q.jobs {
 		func() {
-			defer recovery(j)
+			defer recovery(q, j)
 
 			err := j.Task()(j.Context())
 			go respond(j, err)
+			q.runningTasks.Store(q.runningTasks.Load() - 1)
 		}()
 	}
 }
 
-func recovery(j job.Job) {
+func recovery(q *Queue, j job.Job) {
 	if r := recover(); r != nil {
+		q.runningTasks.Store(q.runningTasks.Load() - 1)
 		j.ResponseChannel() <- job.NewResponse(j.ID(), customerrors.NewRecoveredPanicError(r))
 	}
 }
