@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	q := queue.NewQueue(5, 1)
+	q := queue.NewQueue(2)
 
 	ctx, cancel := context.WithCancel(context.WithValue(context.Background(), "number", "this is not a number"))
 	//cancel()
@@ -21,6 +21,10 @@ func main() {
 
 	q.Add(j1)
 	q.Add(j2)
+	q.Add(j2)
+	q.Add(j2)
+	q.Add(j2)
+	time.Sleep(100 * time.Millisecond)
 	q.Add(j3)
 
 	r := j1.AwaitResponse()
@@ -36,7 +40,13 @@ func main() {
 		fmt.Println(r2.Err().Error())
 	}
 
-	fmt.Println(r2.Data())
+	fmt.Println("r2data", r2.Data())
+
+	r3 := j3.AwaitResponse()
+	if r3.Err() != nil {
+		fmt.Println(r3.Err())
+	}
+	fmt.Println(r3.Data())
 }
 
 func task1(ctx context.Context) (data any, err error) {
@@ -46,13 +56,14 @@ func task1(ctx context.Context) (data any, err error) {
 	default:
 
 	}
-	panic("implement me")
-	fmt.Println("task 1")
+	panic("panic 1")
+	//fmt.Println("task 1")
 	return nil, nil
 }
 
 func task2(context.Context) (data any, err error) {
-	fmt.Println("task 2")
+	//fmt.Println("task 2")
+	panic("panic 2")
 	return "some random data", nil
 }
 
