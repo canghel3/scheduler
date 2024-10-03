@@ -64,6 +64,7 @@ func recovery(q *Queue, j job.Job) {
 	}
 }
 
+// TODO: implement a "timeout" period after which if the response channel is not being listened on, it is closed
 func respond(j job.Job, err error, data any) {
 	j.ResponseChannel() <- job.NewResponse(j.ID(), err, data)
 }
