@@ -2,6 +2,7 @@ package job
 
 import (
 	"context"
+	"fmt"
 	"github.com/google/uuid"
 )
 
@@ -32,8 +33,23 @@ func NewJob(task Task, options ...Option) Job {
 // AwaitResponse blocks until a response is received from the job execution.
 // It is guaranteed to receive a response, even if the executing job panics.
 func (j Job) AwaitResponse() Response {
-	s := <-j.response
-	return s
+	select {
+	case <-j.ctx.Done():
+		return Response{
+			id:   j.id,
+			err:  j.ctx.Err(),
+			data: nil,
+		}
+	case response, ok := <-j.response:
+		if !ok {
+			return Response{
+				id:   j.id,
+				err:  fmt.Errorf("response channel closed before a response was received"),
+				data: nil,
+			}
+		}
+		return response
+	}
 }
 
 func (j Job) ID() string {
