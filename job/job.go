@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type Task func(ctx context.Context) error
+type Task func(ctx context.Context) (data any, err error)
 
 type Job struct {
 	id       string

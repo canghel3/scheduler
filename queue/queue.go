@@ -50,8 +50,8 @@ func (q *Queue) processor() {
 		func() {
 			defer recovery(q, j)
 
-			err := j.Task()(j.Context())
-			go respond(j, err)
+			data, err := j.Task()(j.Context())
+			go respond(j, err, data)
 			q.runningTasks.Store(q.runningTasks.Load() - 1)
 		}()
 	}
@@ -60,10 +60,10 @@ func (q *Queue) processor() {
 func recovery(q *Queue, j job.Job) {
 	if r := recover(); r != nil {
 		q.runningTasks.Store(q.runningTasks.Load() - 1)
-		j.ResponseChannel() <- job.NewResponse(j.ID(), customerrors.NewRecoveredPanicError(r))
+		j.ResponseChannel() <- job.NewResponse(j.ID(), customerrors.NewRecoveredPanicError(r), nil)
 	}
 }
 
-func respond(j job.Job, err error) {
-	j.ResponseChannel() <- job.NewResponse(j.ID(), err)
+func respond(j job.Job, err error, data any) {
+	j.ResponseChannel() <- job.NewResponse(j.ID(), err, data)
 }

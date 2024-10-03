@@ -31,29 +31,33 @@ func main() {
 		fmt.Println(err.Error())
 	}
 
-	time.Sleep(time.Second * 10)
+	r2 := j2.AwaitResponse()
+	if r2.Err() != nil {
+		fmt.Println(r2.Err().Error())
+	}
+
+	fmt.Println(r2.Data())
 }
 
-func task1(ctx context.Context) error {
+func task1(ctx context.Context) (data any, err error) {
 	select {
 	case <-ctx.Done():
-		return ctx.Err()
+		return nil, ctx.Err()
 	default:
 
 	}
 	panic("implement me")
 	fmt.Println("task 1")
-	return nil
+	return nil, nil
 }
 
-func task2(context.Context) error {
-	time.Sleep(1 * time.Second)
+func task2(context.Context) (data any, err error) {
 	fmt.Println("task 2")
-	return nil
+	return "some random data", nil
 }
 
-func samplePassValue(ctx context.Context) error {
+func samplePassValue(ctx context.Context) (data any, err error) {
 	time.Sleep(2 * time.Second)
 	fmt.Println(ctx.Value("number"))
-	return nil
+	return nil, nil
 }
