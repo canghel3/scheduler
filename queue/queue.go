@@ -76,5 +76,6 @@ func recovery(q *Queue, j job.Job) {
 }
 
 func respond(j job.Job, err error, data any) {
+	//TODO: could this function panic somehow?
 	j.ResponseChannel() <- job.NewResponse(j.ID(), err, data)
 }
