@@ -15,9 +15,9 @@ package main
 
 import "context"
 
-func myTask(ctx context.Context) error {
+func myTask(ctx context.Context) (data any, err error) {
 	//code goes here
-	return nil
+	return "data", nil
 }
 ```
 
@@ -31,18 +31,15 @@ import (
 	"context"
 )
 
-func myTask(ctx context.Context) error {
+func myTask(ctx context.Context) (data any, err error) {
 	//code goes here
-	return nil
+	return "data", nil
 }
 
 func main() {
 	//a worker refers to a routine that processes a task
-	//queue with size 2 (and 2 workers)
-	q := queue.NewQueue(2)
-
-	//queue with size 2 and 3 workers
-	q = queue.NewQueue(2, 3)
+	//queue with 3 workers
+	q := queue.NewQueue(3)
 }
 ```
 
@@ -57,18 +54,15 @@ import (
 	"context"
 )
 
-func myTask(ctx context.Context) error {
+func myTask(ctx context.Context) (data any, err error) {
 	//code goes here
-	return nil
+	return "data", nil
 }
 
 func main() {
 	//a worker refers to a routine that processes a task
-	//queue with size 2 (and 2 workers)
-	q := queue.NewQueue(2)
-
-	//queue with size 2 and 3 workers
-	q = queue.NewQueue(2, 3)
+	//queue with 3 workers
+	q := queue.NewQueue(3)
 
 	job1 := job.NewJob(myTask)
 	//add job1 to the queue
@@ -97,18 +91,15 @@ import (
 	"context"
 )
 
-func myTask(ctx context.Context) error {
+func myTask(ctx context.Context) (data any, err error) {
 	//code goes here
-	return nil
+	return "data", nil
 }
 
 func main() {
 	//a worker refers to a routine that processes a task
-	//queue with size 2 (and 2 workers)
-	q := queue.NewQueue(2)
-
-	//queue with size 2 and 3 workers
-	q = queue.NewQueue(2, 3)
+	//queue with 3 workers
+	q := queue.NewQueue(3)
 
 	job1 := job.NewJob(myTask)
 	//add job1 to the queue
@@ -125,7 +116,11 @@ func main() {
 	//note that this operation is blocking
 	response := job2.AwaitResponse()
 
+	if response.Err() != nil {
+		//handle error
+	}
+
 	fmt.Println(response.ID())
-	fmt.Println(response.Err())
+	fmt.Println(response.Data())
 }
 ```

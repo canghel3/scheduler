@@ -24,8 +24,8 @@ func main() {
 	q.Add(j2)
 	q.Add(j2)
 	q.Add(j2)
-	time.Sleep(100 * time.Millisecond)
 	q.Add(j3)
+	time.Sleep(100 * time.Millisecond)
 
 	r := j1.AwaitResponse()
 	fmt.Println(r.ID())
@@ -40,13 +40,15 @@ func main() {
 		fmt.Println(r2.Err().Error())
 	}
 
-	fmt.Println("r2data", r2.Data())
+	fmt.Println("r2 data:", r2.Data())
 
 	r3 := j3.AwaitResponse()
 	if r3.Err() != nil {
-		fmt.Println(r3.Err())
+		fmt.Println("r3 error:", r3.Err())
 	}
 	fmt.Println(r3.Data())
+
+	//time.Sleep(time.Second)
 }
 
 func task1(ctx context.Context) (data any, err error) {

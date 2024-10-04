@@ -54,7 +54,7 @@ func (q *Queue) processor() {
 			select {
 			case <-j.Context().Done():
 				//user cancelled or task timed out waiting in the queue
-				go respond(j, j.Context().Err(), nil)
+				//do nothing because response is handled in job.AwaitResponse
 			default:
 				data, err := j.Task()(j.Context())
 				go respond(j, err, data)
