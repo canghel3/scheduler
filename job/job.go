@@ -30,6 +30,8 @@ func NewJob(task Task, options ...Option) Job {
 	return job
 }
 
+// TODO: what if the same job is queued multiple times? all responses are recived on the same channel, but only 1 is read
+
 // AwaitResponse blocks until a response is received from the job execution.
 // It is guaranteed to receive a response, even if the executing job panics.
 func (j Job) AwaitResponse() Response {
