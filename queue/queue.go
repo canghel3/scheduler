@@ -10,7 +10,6 @@ import (
 type Queue struct {
 	workers      int
 	jobChannel   chan job.Job
-	jobRegistry  map[string][]chan job.Job
 	runningTasks atomic.Int32
 }
 
